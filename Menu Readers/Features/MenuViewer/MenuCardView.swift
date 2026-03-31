@@ -16,7 +16,7 @@ struct MenuCardView: View {
             if let displayImage {
                 Image(uiImage: displayImage)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .aspectRatio(contentMode: .fill)
                     .scaleEffect(scale)
                     .offset(offset)
                     .frame(width: geo.size.width, height: geo.size.height)
