@@ -5,7 +5,12 @@ struct AdjustmentPanel: View {
     let onDismiss: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 16) {
+            // Handle
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color.subtleBorder)
+                .frame(width: 40, height: 4)
+
             // Header
             HStack {
                 Text("Adjust")
@@ -18,13 +23,8 @@ struct AdjustmentPanel: View {
                     .foregroundStyle(Color.amber)
             }
 
-            // Handle
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Color.subtleBorder)
-                .frame(width: 40, height: 4)
-
             // Sliders
-            VStack(spacing: 28) {
+            VStack(spacing: 20) {
                 sliderRow(
                     label: "Brightness",
                     value: $menuImage.brightnessAdjustment,
@@ -73,14 +73,12 @@ struct AdjustmentPanel: View {
                 }
             }
         }
-        .padding(.top, 24)
+        .padding(.top, 16)
         .padding(.horizontal, 24)
-        .padding(.bottom, 40)
-        .background(
-            UnevenRoundedRectangle(topLeadingRadius: 24, topTrailingRadius: 24)
-                .fill(Color.cardBg)
-        )
-        .presentationDetents([.height(480)])
+        .padding(.bottom, 34)
+        .frame(maxHeight: .infinity, alignment: .bottom)
+        .background(Color.cardBg)
+        .presentationDetents([.height(520)])
         .presentationBackground(.clear)
         .presentationDragIndicator(.hidden)
         .onChange(of: menuImage.brightnessAdjustment) { _, _ in menuImage.hasManualAdjustments = true }
