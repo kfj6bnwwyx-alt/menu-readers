@@ -6,11 +6,6 @@ struct AdjustmentPanel: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            // Handle
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Color.subtleBorder)
-                .frame(width: 40, height: 4)
-
             // Header
             HStack {
                 Text("Adjust")
@@ -22,6 +17,11 @@ struct AdjustmentPanel: View {
                     .font(.dmSans(16, weight: .semibold))
                     .foregroundStyle(Color.amber)
             }
+
+            // Handle
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color.subtleBorder)
+                .frame(width: 40, height: 4)
 
             // Sliders
             VStack(spacing: 28) {

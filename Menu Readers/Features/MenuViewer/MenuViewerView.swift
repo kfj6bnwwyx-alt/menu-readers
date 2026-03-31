@@ -178,8 +178,7 @@ struct MenuViewerView: View {
                 .shadow(color: .black.opacity(0.5), radius: 32, y: 8)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Page Dots
@@ -242,30 +241,28 @@ struct MenuViewerView: View {
 
     private var bottomBar: some View {
         HStack(spacing: 64) {
-            if viewModel.currentImage != nil {
-                Button {
-                    viewModel.showingAdjustments = true
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 24))
-                        Text("Adjust")
-                            .font(.dmSans(16, weight: .semibold))
-                    }
-                    .foregroundStyle(Color.textPrimary)
+            Button {
+                viewModel.showingAdjustments = true
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 24))
+                    Text("Adjust")
+                        .font(.dmSans(16, weight: .semibold))
                 }
+                .foregroundStyle(Color.textPrimary)
+            }
 
-                Button {
-                    showingCamera = true
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "camera")
-                            .font(.system(size: 24))
-                        Text("Camera")
-                            .font(.dmSans(16, weight: .semibold))
-                    }
-                    .foregroundStyle(Color.textPrimary)
+            Button {
+                showingCamera = true
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "camera")
+                        .font(.system(size: 24))
+                    Text("Camera")
+                        .font(.dmSans(16, weight: .semibold))
                 }
+                .foregroundStyle(Color.textPrimary)
             }
         }
         .frame(height: 64)
