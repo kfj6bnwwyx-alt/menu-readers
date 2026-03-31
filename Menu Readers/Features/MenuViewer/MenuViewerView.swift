@@ -105,18 +105,35 @@ struct MenuViewerView: View {
                 .padding(.horizontal, 24)
             }
 
-            // Image pager
-            TabView(selection: $viewModel.currentImageIndex) {
-                ForEach(Array(viewModel.currentImages.enumerated()), id: \.element.id) { index, menuImage in
-                    MenuCardView(
-                        menuImage: menuImage,
-                        redLightMode: appState.isRedLightMode,
-                        enhancementService: viewModel.enhancementService
-                    )
-                    .tag(index)
+            // Card fan stack
+            cardStack
+                .gesture(
+                    DragGesture(minimumDistance: 30)
+                        .onEnded { value in
+                            let threshold: CGFloat = 60
+                            if value.translation.width < -threshold {
+                                withAnimation(.spring(duration: 0.35)) {
+                                    viewModel.currentImageIndex = min(viewModel.currentImageIndex + 1,
+                                                                      viewModel.currentImages.count - 1)
+                                }
+                            } else if value.translation.width > threshold {
+                                withAnimation(.spring(duration: 0.35)) {
+                                    viewModel.currentImageIndex = max(viewModel.currentImageIndex - 1, 0)
+                                }
+                            }
+                        }
+                )
+
+            // Page dots + label
+            if viewModel.currentImages.count > 1 {
+                VStack(spacing: 8) {
+                    pageDots
+                    Text("Page \(viewModel.currentImageIndex + 1) of \(viewModel.currentImages.count)")
+                        .font(.dmSans(11, weight: .medium))
+                        .foregroundStyle(Color.textSecondary)
                 }
+                .padding(.top, 4)
             }
-            .tabViewStyle(.page(indexDisplayMode: .automatic))
 
             // Hint row
             Text("Long press to expand  \u{00B7}  Swipe to browse")
@@ -126,6 +143,58 @@ struct MenuViewerView: View {
 
             // Bottom bar
             bottomBar
+        }
+    }
+
+    // MARK: - Card Stack
+
+    private var cardStack: some View {
+        GeometryReader { geo in
+            let cardWidth = min(geo.size.width - 100, 300)
+            let cardHeight = min(geo.size.height, 430)
+
+            ZStack {
+                // Back cards (behind current)
+                ForEach(Array(viewModel.currentImages.enumerated().reversed()), id: \.element.id) { index, _ in
+                    let offset = index - viewModel.currentImageIndex
+                    if offset > 0 && offset <= 3 {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.surfaceBg)
+                            .stroke(Color.subtleBorder, lineWidth: 1)
+                            .frame(width: cardWidth - CGFloat(offset * 10),
+                                   height: cardHeight - CGFloat(offset * 20))
+                            .rotationEffect(.degrees(Double(offset) * 4))
+                            .shadow(color: .black.opacity(0.25), radius: CGFloat(offset * 8),
+                                    y: CGFloat(offset * 4))
+                    }
+                }
+
+                // Main card
+                if let currentImage = viewModel.currentImage {
+                    MenuCardView(
+                        menuImage: currentImage,
+                        redLightMode: appState.isRedLightMode,
+                        enhancementService: viewModel.enhancementService
+                    )
+                    .frame(width: cardWidth, height: cardHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: .black.opacity(0.5), radius: 32, y: 8)
+                }
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+    }
+
+    // MARK: - Page Dots
+
+    private var pageDots: some View {
+        HStack(spacing: 8) {
+            ForEach(0..<viewModel.currentImages.count, id: \.self) { index in
+                Circle()
+                    .fill(index == viewModel.currentImageIndex ? Color.amber : Color.subtleBorder)
+                    .frame(width: index == viewModel.currentImageIndex ? 8 : 6,
+                           height: index == viewModel.currentImageIndex ? 8 : 6)
+            }
         }
     }
 
