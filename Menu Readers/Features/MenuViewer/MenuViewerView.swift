@@ -89,10 +89,8 @@ struct MenuViewerView: View {
 
     private var menuContent: some View {
         VStack(spacing: 0) {
-            // Session picker
-            if viewModel.activeSessions.count > 1 {
-                sessionPicker
-            }
+            // Session picker (always visible — shows time even for single session)
+            sessionPicker
 
             // Session expiry
             if let session = viewModel.currentSession {
@@ -149,40 +147,39 @@ struct MenuViewerView: View {
     // MARK: - Card Stack
 
     private var cardStack: some View {
-        GeometryReader { geo in
-            let cardWidth = min(geo.size.width - 100, 300)
-            let cardHeight = min(geo.size.height, 430)
-
-            ZStack {
-                // Back cards (behind current)
-                ForEach(Array(viewModel.currentImages.enumerated().reversed()), id: \.element.id) { index, _ in
-                    let offset = index - viewModel.currentImageIndex
-                    if offset > 0 && offset <= 3 {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.surfaceBg)
-                            .stroke(Color.subtleBorder, lineWidth: 1)
-                            .frame(width: cardWidth - CGFloat(offset * 10),
-                                   height: cardHeight - CGFloat(offset * 20))
-                            .rotationEffect(.degrees(Double(offset) * 4))
-                            .shadow(color: .black.opacity(0.25), radius: CGFloat(offset * 8),
-                                    y: CGFloat(offset * 4))
-                    }
-                }
-
-                // Main card
-                if let currentImage = viewModel.currentImage {
-                    MenuCardView(
-                        menuImage: currentImage,
-                        redLightMode: appState.isRedLightMode,
-                        enhancementService: viewModel.enhancementService
-                    )
-                    .frame(width: cardWidth, height: cardHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .black.opacity(0.5), radius: 32, y: 8)
+        ZStack {
+            // Back cards (behind current)
+            ForEach(Array(viewModel.currentImages.enumerated().reversed()), id: \.element.id) { index, _ in
+                let distance = index - viewModel.currentImageIndex
+                if distance > 0 && distance <= 3 {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(distance == 1 ? Color.surfaceBg : Color.surfaceBg.opacity(0.8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.subtleBorder, lineWidth: 1)
+                        )
+                        .frame(width: 300 - CGFloat(distance * 10),
+                               height: 430 - CGFloat(distance * 20))
+                        .rotationEffect(.degrees(Double(distance) * 4))
+                        .shadow(color: .black.opacity(0.3), radius: CGFloat(distance * 8),
+                                y: CGFloat(distance * 4))
                 }
             }
-            .frame(width: geo.size.width, height: geo.size.height)
+
+            // Main card
+            if let currentImage = viewModel.currentImage {
+                MenuCardView(
+                    menuImage: currentImage,
+                    redLightMode: appState.isRedLightMode,
+                    enhancementService: viewModel.enhancementService
+                )
+                .frame(width: 300, height: 430)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: .black.opacity(0.5), radius: 32, y: 8)
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
     }
 
     // MARK: - Page Dots
