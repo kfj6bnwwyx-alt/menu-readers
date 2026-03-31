@@ -175,6 +175,10 @@ struct MenuViewerView: View {
                 )
                 .frame(width: 300, height: 430)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.subtleBorder, lineWidth: 1)
+                )
                 .shadow(color: .black.opacity(0.5), radius: 32, y: 8)
             }
         }
